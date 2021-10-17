@@ -1,6 +1,6 @@
 from abc import ABC,abstractmethod
 import random
-from typing import Union
+from typing import List, Union
 from ponicode.parser import CodeParser,Node
 
 class MetaCharacterGenerator(ABC):
@@ -11,19 +11,21 @@ class MetaCharacterGenerator(ABC):
     def _get_regex_slice_node(self,regex_slice:str)->Node:
         return self.parser.parse(regex_slice).root_node.children[0].children[0]
     
-    def _pick_natural_char(self,list:str)->Union[None,str]:
+    def _pick_natural_chars_from_list(self,list:str)->List:
         char = self.naturalness_provider.get_char()
-        
+        chars = []
         if char != None and char.upper() in list:
-            return char.upper()
+            chars.append(char.upper())
         elif char != None and char.lower() in list:
-            
-            return char.lower()
-        else:
-            return random.choice(list)
+            chars.append(char.lower())
+        
+        return chars
     
     def init_naturalness(self)->None:
         MetaCharacterGenerator.NaturalnessProvider.init()
+    
+    def update_naturalness(self)->None:
+        MetaCharacterGenerator.NaturalnessProvider.update()
         
     @abstractmethod
     def generate_character(self,regex_slice:str)->str:
@@ -50,7 +52,9 @@ class MetaCharacterGenerator(ABC):
             if MetaCharacterGenerator.NaturalnessProvider.cursor >= len(MetaCharacterGenerator.NaturalnessProvider.current_string):
                 return None
             else:
-                
                 char = MetaCharacterGenerator.NaturalnessProvider.current_string[MetaCharacterGenerator.NaturalnessProvider.cursor]
-                MetaCharacterGenerator.NaturalnessProvider.cursor += 1
                 return char
+        def update()->None:
+            MetaCharacterGenerator.NaturalnessProvider.cursor += 1
+            if MetaCharacterGenerator.NaturalnessProvider.cursor >= len(MetaCharacterGenerator.NaturalnessProvider.current_string):
+                MetaCharacterGenerator.NaturalnessProvider.init()

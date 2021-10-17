@@ -51,5 +51,6 @@ class AdditionalPathGenerator:
             loop_iterations = [random.randint(max(1,lower_iteration_number),upper_iteration_number)]
         else :
             self.mutated_states.add(state)
-            loop_iterations = list(set([random.randrange(lower_iteration_number),lower_iteration_number,upper_iteration_number,random.randrange(upper_iteration_number+1,upper_iteration_number+7)]))
+            
+            loop_iterations = list(set([random.randrange(max(lower_iteration_number,1)),lower_iteration_number,upper_iteration_number,random.randrange(upper_iteration_number+1,upper_iteration_number+7)]))
         return loop_iterations
